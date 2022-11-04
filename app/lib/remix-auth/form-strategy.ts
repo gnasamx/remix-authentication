@@ -1,0 +1,51 @@
+import type { AppLoadContext, SessionStorage } from "@remix-run/server-runtime";
+import type { AuthenticateOptions } from "./strategy";
+import { Strategy } from "./strategy";
+
+export interface FormStrategyVerifyParams {
+  /**
+   * A FormData object with the content of the form used to trigger the
+   * authentication.
+   *
+   * Here you can read any input value using the FormData API.
+   */
+  form: FormData;
+  /**
+   * An object of arbitrary for route loaders and actions provided by the
+   * server's `getLoadContext()` function.
+   */
+  context?: AppLoadContext;
+}
+
+export class FormStrategy<User> extends Strategy<
+  User,
+  FormStrategyVerifyParams
+> {
+  name = "form";
+
+  async authenticate(
+    request: Request,
+    sessionStorage: SessionStorage,
+    options: AuthenticateOptions
+  ): Promise<User> {
+    let form = await this.readFormData(request, options);
+
+    let user: User;
+    try {
+      user = await this.verify({ form, context: options.context });
+    } catch (error) {
+      let message = (error as Error).message;
+      return await this.failure(message, request, sessionStorage, options);
+    }
+
+    return this.success(user, request, sessionStorage, options);
+  }
+
+  private async readFormData(request: Request, options: AuthenticateOptions) {
+    if (options.context?.formData instanceof FormData) {
+      return options.context.formData;
+    }
+
+    return await request.formData();
+  }
+}
