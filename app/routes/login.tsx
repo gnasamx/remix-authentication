@@ -30,29 +30,35 @@ export default function Screen() {
   const { error } = useLoaderData<LoaderData>();
 
   return (
-    <Form method="post">
-      {error ? <div>{error.message}</div> : null}
-      <div>
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          name="email"
-          id="email"
-          defaultValue="user@domain.tld"
-        />
-      </div>
+    <div>
+      <Form method="post">
+        {error ? <div>{error.message}</div> : null}
+        <div>
+          <label htmlFor="email">Email</label>
+          <input
+            type="email"
+            name="email"
+            id="email"
+            defaultValue="user@domain.tld"
+          />
+        </div>
 
-      <div>
-        <label htmlFor="password">Password</label>
-        <input
-          type="password"
-          name="password"
-          id="password"
-          defaultValue="test"
-        />
-      </div>
+        <div>
+          <label htmlFor="password">Password</label>
+          <input
+            type="password"
+            name="password"
+            id="password"
+            defaultValue="test"
+          />
+        </div>
 
-      <button>Log In</button>
-    </Form>
+        <button>Log In</button>
+      </Form>
+      <p>----- or ----- </p>
+      <Form action="/auth/github" method="post">
+        <button>Login with GitHub</button>
+      </Form>
+    </div>
   );
 }
